@@ -30,30 +30,39 @@ export class HotkeysUI {
     const h = t.hotkeys;
 
     this.container.innerHTML = `
-      <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-card" style="max-width: 600px;">
         <div class="modal-header">
           <div>
             <div class="modal-title">⌨️ ${h.title}</div>
-            <div class="modal-subtitle">Thao tác điều khiển bàn phím & chuột trên máy tính / cảm ứng trên di động</div>
+            <div class="modal-subtitle">Thao tác điều khiển trên máy tính và cảm ứng di động</div>
           </div>
           <button id="hk-close-btn" class="btn-close">&times;</button>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
           <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
-            <strong>[WASD] hoặc [Phím Mũi Tên]:</strong> ${h.wasd}
+            <strong>[WASD] hoặc [Mũi tên]:</strong> ${h.wasd}
           </div>
           <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
-            <strong>[Con Trỏ Chuột]:</strong> ${h.mouse}
+            <strong>[Chuột]:</strong> ${h.mouse}
           </div>
           <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
-            <strong>[Chuột Trái]:</strong> ${h.click}
+            <strong>[Chuột trái / Chạm màn hình]:</strong> ${h.click}
+          </div>
+          <div style="background: rgba(2,132,199,0.18); border: 1px solid rgba(56,189,248,0.3); padding: 10px 14px; border-radius: 6px;">
+            <strong>🔍 [Cuộn Chuột] hoặc [Phím Z] / [Phím X]:</strong> Phóng to (Zoom In) và Thu nhỏ (Zoom Out) ống kính máy ảnh
+          </div>
+          <div style="background: rgba(2,132,199,0.18); border: 1px solid rgba(56,189,248,0.3); padding: 10px 14px; border-radius: 6px;">
+            <strong>📱 [Cảm ứng 2 ngón (Pinch)]:</strong> Chụm hoặc mở rộng 2 ngón tay trên màn hình điện thoại để thu phóng
+          </div>
+          <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
+            <strong>[Phím F]:</strong> Chuyển nhanh giữa các nấc tiêu cự (Góc rộng -> Tiêu chuẩn -> Cận cảnh)
+          </div>
+          <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
+            <strong>[Phím 0]:</strong> Đặt lại độ phóng đại ống kính về 1.0x
           </div>
           <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
             <strong>[Phím Space]:</strong> ${h.space}
-          </div>
-          <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
-            <strong>[Phím F]:</strong> ${h.keyF}
           </div>
           <div style="background: rgba(30,41,59,0.5); padding: 10px 14px; border-radius: 6px;">
             <strong>[Phím H]:</strong> ${h.keyH}
@@ -63,8 +72,8 @@ export class HotkeysUI {
           </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-          <button id="hk-ok-btn" class="btn btn-primary">
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+          <button id="hk-ok-btn" class="btn btn-primary" style="padding: 8px 24px;">
             Đã Hiểu
           </button>
         </div>

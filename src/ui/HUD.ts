@@ -1,4 +1,4 @@
-// Gameplay HUD Overlay: Top bar, Bottom controls, Quick tickers
+// Gameplay HUD Overlay: Top bar, Bottom controls, Quick tickers, Optical Zoom Controls
 
 import { GameState } from '../core/GameState';
 import { i18n } from '../i18n';
@@ -27,6 +27,7 @@ export class HUD {
     const chapter = this.gameState.chapterCampaign.getCurrentChapter();
     const metrics = this.gameState.metricsManager.state;
     const isPaused = this.gameState.isPaused;
+    const camera = this.gameState.camera;
 
     this.container.innerHTML = `
       <!-- Top HUD -->
@@ -74,11 +75,24 @@ export class HUD {
         </div>
       ` : ''}
 
-      <!-- Bottom HUD -->
+      <!-- Bottom HUD with Zoom Controls -->
       <div class="hud-bottom">
         <button id="hud-shutter-btn" class="shutter-btn">
           📷 ${t.hud.takePhoto}
         </button>
+
+        <!-- Optical Zoom Controls Group -->
+        <div class="hud-panel" style="display: flex; align-items: center; gap: 5px; padding: 4px 8px;">
+          <button id="hud-zoom-out-btn" class="hud-btn" style="padding: 6px 10px; font-weight: 800; font-size: 13px;" title="Thu nhỏ (Góc rộng - Phím X hoặc Cuộn chuột xuống)">
+            ➖
+          </button>
+          <button id="hud-zoom-badge" class="hud-btn" style="padding: 6px 10px; font-family: monospace; font-weight: 700; color: #38bdf8; min-width: 52px; text-align: center;" title="Bấm để đặt lại Zoom 1.0x (Phím 0)">
+            ${camera.zoomLevel.toFixed(1)}x
+          </button>
+          <button id="hud-zoom-in-btn" class="hud-btn" style="padding: 6px 10px; font-weight: 800; font-size: 13px;" title="Phóng to (Cận cảnh - Phím Z hoặc Cuộn chuột lên)">
+            ➕
+          </button>
+        </div>
 
         <button id="hud-newsroom-btn" class="hud-btn">
           📰 ${t.hud.newsroom}
@@ -122,6 +136,22 @@ export class HUD {
       this.onShutterClick();
     });
 
+    // Zoom Controls
+    document.getElementById('hud-zoom-in-btn')?.addEventListener('click', () => {
+      this.gameState.camera.zoomIn(0.25);
+      this.syncZoomDisplay();
+    });
+
+    document.getElementById('hud-zoom-out-btn')?.addEventListener('click', () => {
+      this.gameState.camera.zoomOut(0.25);
+      this.syncZoomDisplay();
+    });
+
+    document.getElementById('hud-zoom-badge')?.addEventListener('click', () => {
+      this.gameState.camera.resetZoom();
+      this.syncZoomDisplay();
+    });
+
     document.getElementById('hud-newsroom-btn')?.addEventListener('click', () => {
       if (this.gameState.photos.length > 0) {
         this.gameState.selectedPhotoForEditorial = this.gameState.photos[0];
@@ -141,6 +171,7 @@ export class HUD {
 
     document.getElementById('hud-focus-btn')?.addEventListener('click', () => {
       this.gameState.camera.toggleFocus();
+      this.syncZoomDisplay();
     });
 
     document.getElementById('hud-hotkeys-btn')?.addEventListener('click', () => {
@@ -150,5 +181,12 @@ export class HUD {
     document.getElementById('hud-menu-btn')?.addEventListener('click', () => {
       this.gameState.openModal('settings');
     });
+  }
+
+  private syncZoomDisplay(): void {
+    const badge = document.getElementById('hud-zoom-badge');
+    if (badge) {
+      badge.textContent = `${this.gameState.camera.zoomLevel.toFixed(1)}x`;
+    }
   }
 }

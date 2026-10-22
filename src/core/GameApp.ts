@@ -33,6 +33,10 @@ export class GameApp {
   // Key tracking
   private keysDown: Set<string> = new Set();
 
+  // Multi-touch pinch tracking
+  private initialTouchDistance: number = 0;
+  private initialTouchZoom: number = 1.0;
+
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     const ctx = canvas.getContext('2d', { alpha: false });
@@ -121,7 +125,7 @@ export class GameApp {
 
     this.ctx.restore();
 
-    // 2. Camera Viewfinder Overlay (Screen Space)
+    // 2. Camera Viewfinder Overlay (Screen Space with Optical Lens Magnification)
     if (this.gameState.activeModal === 'none') {
       const worldRect = camera.getViewfinderWorldRect();
       const evaluation = this.gameState.eventSystem.evaluateViewfinder(
@@ -134,6 +138,7 @@ export class GameApp {
 
       camera.renderOverlay(
         this.ctx,
+        this.canvas,
         evaluation.hasNotableEvent,
         evaluation.framingScore
       );
@@ -145,7 +150,7 @@ export class GameApp {
 
     sound.init(); // Resume audio on action
 
-    // Generate low-res snapshot of viewfinder area
+    // Generate high-quality snapshot of viewfinder area
     const worldRect = this.gameState.camera.getViewfinderWorldRect();
     const snapshotCanvas = document.createElement('canvas');
     snapshotCanvas.width = 320;
@@ -153,7 +158,7 @@ export class GameApp {
     const sCtx = snapshotCanvas.getContext('2d');
 
     if (sCtx) {
-      // Draw sub-region of current canvas corresponding to viewfinder
+      // Screen coordinates corresponding to the active zoom world rect
       const screenX = this.gameState.camera.viewfinderX - (worldRect.width / 2);
       const screenY = this.gameState.camera.viewfinderY - (worldRect.height / 2);
 
@@ -168,7 +173,7 @@ export class GameApp {
         320,
         240
       );
-      // Photo filter effect: slight vintage contrast
+      // Photo filter effect: subtle vintage warmth & newspaper scanline vibe
       sCtx.fillStyle = 'rgba(254, 240, 138, 0.08)';
       sCtx.fillRect(0, 0, 320, 240);
     }
@@ -195,21 +200,52 @@ export class GameApp {
       this.gameState.camera.setMousePosition(e.clientX, e.clientY);
     });
 
+    // Mouse wheel: Optical Zoom In (Cuộn lên) / Zoom Out (Cuộn xuống)
+    window.addEventListener('wheel', e => {
+      if (this.gameState.activeModal === 'none' && !this.gameState.isPaused) {
+        if (e.deltaY < 0) {
+          this.gameState.camera.zoomIn(0.15);
+        } else if (e.deltaY > 0) {
+          this.gameState.camera.zoomOut(0.15);
+        }
+      }
+    }, { passive: true });
+
     // Mouse click for camera shutter
     this.canvas.addEventListener('click', () => {
-      // Only trigger if click is on canvas and no modal is active
       if (this.gameState.activeModal === 'none' && !this.gameState.isPaused) {
         this.handleShutterSnapshot();
       }
     });
 
-    // Touch controls
-    this.canvas.addEventListener('touchmove', e => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        this.gameState.camera.setMousePosition(touch.clientX, touch.clientY);
+    // Touch controls: single touch for viewfinder aim, pinch for optical zoom
+    this.canvas.addEventListener('touchstart', e => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        this.initialTouchDistance = Math.hypot(dx, dy);
+        this.initialTouchZoom = this.gameState.camera.targetZoomLevel;
       }
     }, { passive: true });
+
+    this.canvas.addEventListener('touchmove', e => {
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        this.gameState.camera.setMousePosition(touch.clientX, touch.clientY);
+      } else if (e.touches.length === 2 && this.initialTouchDistance > 0) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const factor = dist / this.initialTouchDistance;
+        this.gameState.camera.setZoom(this.initialTouchZoom * factor);
+      }
+    }, { passive: true });
+
+    this.canvas.addEventListener('touchend', e => {
+      if (e.touches.length < 2) {
+        this.initialTouchDistance = 0;
+      }
+    });
 
     // Keyboard controls
     window.addEventListener('keydown', e => {
@@ -223,7 +259,22 @@ export class GameApp {
         }
       }
 
-      // F for Focus/Zoom mode
+      // Zoom In (Z, +, =)
+      if (e.code === 'KeyZ' || e.code === 'Equal' || e.code === 'NumpadAdd') {
+        this.gameState.camera.zoomIn(0.25);
+      }
+
+      // Zoom Out (X, -, _)
+      if (e.code === 'KeyX' || e.code === 'Minus' || e.code === 'NumpadSubtract') {
+        this.gameState.camera.zoomOut(0.25);
+      }
+
+      // Reset Zoom to 1.0x (Digit 0)
+      if (e.code === 'Digit0' || e.code === 'Numpad0') {
+        this.gameState.camera.resetZoom();
+      }
+
+      // F for Quick Preset Focus/Zoom Toggle
       if (e.code === 'KeyF') {
         this.gameState.camera.toggleFocus();
       }

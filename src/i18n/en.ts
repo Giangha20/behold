@@ -30,7 +30,7 @@ export const en = {
     newsroom: 'Newsroom (N)',
     journal: 'Journal (J)',
     social: 'City Metrics (M)',
-    focusMode: 'Focus Mode (F)',
+    focusMode: 'Toggle Zoom (F)',
     help: 'Hotkeys (H)',
     speedNormal: '1x Speed',
     speedFast: '2x Speed',

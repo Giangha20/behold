@@ -30,7 +30,7 @@ export const vi = {
     newsroom: 'Tòa Soạn (N)',
     journal: 'Nhật Ký (J)',
     social: 'Chỉ Số Đô Thị (M)',
-    focusMode: 'Chế Độ Tiêu Điểm (F)',
+    focusMode: 'Đổi Zoom (F)',
     help: 'Phím Tắt (H)',
     speedNormal: '1x Tốc độ',
     speedFast: '2x Tốc độ',

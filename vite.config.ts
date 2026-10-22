@@ -14,8 +14,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: {
-        index: resolve(__dirname, 'src/main.ts'),
-        html: resolve(__dirname, 'index.html')
+        index: resolve(import.meta.dirname, 'src/main.ts')
       },
       output: {
         entryFileNames: 'assets/[name].js',

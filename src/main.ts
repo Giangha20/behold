@@ -2,7 +2,7 @@
 
 import { GameApp } from './core/GameApp';
 
-window.addEventListener('DOMContentLoaded', () => {
+function initGame(): void {
   const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
   if (!canvas) {
     console.error('Cannot find #game-canvas element');
@@ -13,4 +13,11 @@ window.addEventListener('DOMContentLoaded', () => {
   app.start();
 
   console.log('Echoes of the Crowd (Vọng Âm Đám Đông) successfully initialized.');
-});
+}
+
+// Support both initial parsing and deferred/module execution
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGame);
+} else {
+  initGame();
+}

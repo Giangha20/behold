@@ -9,27 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
-  <link rel="stylesheet" crossorigin href="./assets/html.css">
+  <link rel="stylesheet" href="./assets/index.css" />
 </head>
 <body>
   <div id="app">
     <canvas id="game-canvas"></canvas>
   </div>
-  <script>
-    if (location.hostname.endsWith('github.io') || location.protocol === 'file:') {
-      // Khi chạy trực tiếp trên GitHub Pages không có Node/Vite build server
-      var s = document.createElement('script');
-      s.type = 'module';
-      s.crossOrigin = 'anonymous';
-      s.src = './assets/index.js';
-      document.body.appendChild(s);
-    } else {
-      // Khi chạy trong môi trường phát triển Vite (localhost)
-      var s = document.createElement('script');
-      s.type = 'module';
-      s.src = './src/main.ts';
-      document.body.appendChild(s);
-    }
-  </script>
+  <script type="module" src="./assets/index.js"></script>
 </body>
 </html>
